@@ -4,6 +4,8 @@
 #include<TCHAR.H>
 #include <math.h> 
 #include <random>
+#define DEFINED_TEXT L"F2as dfa sdf asd fas df asd fas dfasdfasdfasdfasdf asdfasdfasdfaAGATHAF"
+
 std::default_random_engine generator;
 std::uniform_int_distribution<int> distribution(0, 255);
 wchar_t* convertCharArrayToLPCWSTR(const char* charArray)
@@ -42,22 +44,30 @@ wchar_t* convertCharArrayToLPCWSTR(const char* charArray)
 		SelectObject(hdc, hFont);
 
 		RECT textRect;
-		for (int i = 0; i < n; i++)
+		for (int columnNumber = 0; columnNumber < n; columnNumber++)
 		{
-			for (int j = 0; j < m; j++)
-			{
-				SetTextColor(hdc, RGB((byte)distribution(generator), (byte)distribution(generator), (byte)distribution(generator)));
-				textRect.left = i* width + 3;
-				textRect.right = i*width + width;
-				textRect.bottom = j*height + height;
-				textRect.top = j*height;
-				DrawText(hdc, L"F2as dfa sdf asd fas df asd fas dfasdfasdfasdfasdf asdfasdfasdfaAGATHAF", 70, &textRect, DT_WORDBREAK);
-			}
+			drawColumn(hdc, columnNumber, textRect, width, height, rowNumber);
 		}
 
 		DeleteObject(hFont);
 		return 1;
 	}
+	void drawColumn(HDC hdc, int columnName, RECT textRect, int width, int height, int rowNumber) {
+	     for (int rowNumber = 0; rowNumber < m; rowNumber++)
+	     {
+		 drawCell(hdc, textRect, rowNumber, columnName, width, height, owNumber);
+	     }
+	}
+
+	void drawCell(HDC hdc, RECT textRect, int rowNumber, int columnNumber, int width, int height, int rowNumber) {
+		SetTextColor(hdc, RGB((byte)distribution(generator), (byte)distribution(generator), (byte)distribution(generator)));
+				textRect.left = columnNumber* width + 3;
+				textRect.right = columnNumber*width + width;
+				textRect.bottom = rowNumber*height + height;
+				textRect.top = rowNumber*height;
+				DrawText(hdc, DEFINED_TEXT, 70, &textRect, DT_WORDBREAK);
+	}
+
 	void TableFileReader::drawTable(HWND hwnd, HDC hdc) {
 		RECT winRect;
 		GetClientRect(hwnd, &winRect);
