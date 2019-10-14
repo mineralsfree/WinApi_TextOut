@@ -5,7 +5,13 @@
 #include "Sprite.h"
 #include<gdiplus.h>
 #include "TableFileReader.h"
-
+#include <iostream>
+#include <locale>
+#include <fstream>
+#include <thread>
+#include <algorithm>
+#include <vector>
+#include <string>
 #define DVD_SPRITE L"logo.png"
 #define TIMER_TIME 50
 #define STEP 5
@@ -15,7 +21,7 @@ Sprite *DVD_Sprite;
 LRESULT CALLBACK  WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 TCHAR WinName[] = _T("MainFrame");
 RECT rc;
-
+std::string tmp_s;
 #pragma comment(lib, "Gdiplus.lib")
 
 using namespace Gdiplus;
@@ -74,6 +80,11 @@ int WINAPI _tWinMain(HINSTANCE This,
 GdiplusStartupInput gdiplusStartupInput; // Связано с загрузкой картинки
 	ULONG_PTR gdiplusToken;
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL); // Включаем GDI+
+	std::string filename;
+	filename = "C:\\Users\\User\\Desktop\\OSISP2\\text.txt";
+	std::ifstream reader(filename.c_str());
+	
+	getline(reader, tmp_s, '\n');
 	text = new TableFileReader(L"C:\\Users\\User\\Desktop\\OSISP2\\text.txt", 3, 4);
 
 	HWND hWnd;
@@ -104,7 +115,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
 		RECT rc;
 		GetWindowRect(hWnd, &rc);
 		HDC hDC = BeginPaint(hWnd, &ps);
-		text->textOut(hWnd, hDC);
+		text->textOut(hWnd, hDC, tmp_s);
 		text->drawTable(hWnd, hDC);
 		EndPaint(hWnd, &ps);
 	}

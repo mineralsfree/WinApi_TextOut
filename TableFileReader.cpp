@@ -3,9 +3,21 @@
 #include <iostream>
 #include<TCHAR.H>
 #include <math.h> 
+#include <string>
 #include <random>
 std::default_random_engine generator;
 std::uniform_int_distribution<int> distribution(0, 255);
+std::wstring s2ws(const std::string& s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+}
 wchar_t* convertCharArrayToLPCWSTR(const char* charArray)
 {
 	wchar_t* wString = new wchar_t[4096];
@@ -25,13 +37,14 @@ wchar_t* convertCharArrayToLPCWSTR(const char* charArray)
 		m = _m;
 
 	}
-	int TableFileReader::textOut(HWND hwnd, HDC hdc) {
+	int TableFileReader::textOut(HWND hwnd, HDC hdc, std::string str) {
 
 		RECT winRect;
 		GetClientRect(hwnd, &winRect);
 		int width = (winRect.right - winRect.left) / n;
 		int height = (winRect.bottom - winRect.top) / m;
-
+		std::wstring stemp = s2ws(str);
+		LPCWSTR result = stemp.c_str();
 		TCHAR buffer_read[50];
 		DWORD bytes_read = 0;
 		bool flag = ReadFile(_file, &buffer_read, 50, &bytes_read, NULL);
@@ -51,7 +64,7 @@ wchar_t* convertCharArrayToLPCWSTR(const char* charArray)
 				textRect.right = i*width + width;
 				textRect.bottom = j*height + height;
 				textRect.top = j*height;
-				DrawText(hdc, L"F2as dfa sdf asd fas df asd fas dfasdfasdfasdfasdf asdfasdfasdfaAGATHAF", 70, &textRect, DT_WORDBREAK);
+				DrawText(hdc, result, 70, &textRect, DT_WORDBREAK);
 			}
 		}
 
