@@ -21,6 +21,7 @@ Sprite *DVD_Sprite;
 LRESULT CALLBACK  WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 TCHAR WinName[] = _T("MainFrame");
 RECT rc;
+
 std::string tmp_s;
 #pragma comment(lib, "Gdiplus.lib")
 
@@ -81,11 +82,13 @@ GdiplusStartupInput gdiplusStartupInput; // Связано с загрузкой
 	ULONG_PTR gdiplusToken;
 	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL); // Включаем GDI+
 	std::string filename;
-	filename = "C:\\Users\\User\\Desktop\\OSISP2\\text.txt";
+	filename = "text.txt";
 	std::ifstream reader(filename.c_str());
-	
 	getline(reader, tmp_s, '\n');
-	text = new TableFileReader(L"C:\\Users\\User\\Desktop\\OSISP2\\text.txt", 3, 4);
+	std::string::iterator end_pos = std::remove(tmp_s.begin(),tmp_s.end(), ' ');
+	tmp_s.erase(end_pos, tmp_s.end());
+	getline(reader, tmp_s, '\n');
+	text = new TableFileReader(L"C:\\Users\\User\\Desktop\\OSISP2\\ext.txt", 4, 4);
 
 	HWND hWnd;
 	MSG msg;
