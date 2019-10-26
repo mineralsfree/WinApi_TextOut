@@ -37,34 +37,53 @@ wchar_t* convertCharArrayToLPCWSTR(const char* charArray)
 		m = _m;
 
 	}
-	int TableFileReader::textOut(HWND hwnd, HDC hdc, std::string str) {
+	void draw(HDC hdc, RECT textRect, LPCWSTR result, int width, int height, int i, int j, int num) {
+		SetTextColor(hdc, RGB((byte)distribution(generator), (byte)distribution(generator), (byte)distribution(generator)));
 
+		DrawText(hdc, result, num, &textRect, NULL);
+	}
+	int TableFileReader::textOut(HWND hwnd, HDC hdc, std::string str) {
+		int textLength = str.length();
 		RECT winRect;
 		GetClientRect(hwnd, &winRect);
+		
+		// w:5, h:8
+
+		int WinWidth = (winRect.right - winRect.left);
+		int WinHeight = (winRect.bottom - winRect.top);
 		int width = (winRect.right - winRect.left) / n;
 		int height = (winRect.bottom - winRect.top) / m;
+		int wk = max(width/((textLength/(m*n)))*10, 5);
+		int h = max(height / 10, 8);
+		int charsInLine = width /wk;
+		TCHAR buffer_read[50];
+		for (int i = 1; i < str.length(); i++) {
+			if (i % charsInLine == 0) {
+				std::string lol = "\n";
+				str.insert(i, lol);
+			}
+		}
 		std::wstring stemp = s2ws(str);
 		LPCWSTR result = stemp.c_str();
-		TCHAR buffer_read[50];
-		DWORD bytes_read = 0;
-		bool flag = ReadFile(_file, &buffer_read, 50, &bytes_read, NULL);
-		int scale = ceil(width/240);
-		HFONT   hFont = CreateFont(20 + scale*2, 10 + scale, 0, 0, FW_REGULAR, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
+		HFONT   hFont = CreateFont(h, wk, 0, 0, FW_REGULAR, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
 			CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Helvetica"));
 
 		SelectObject(hdc, hFont);
-
+		int k = 0;
 		RECT textRect;
 		for (int i = 0; i < n; i++)
 		{
 			for (int j = 0; j < m; j++)
 			{
-				SetTextColor(hdc, RGB((byte)distribution(generator), (byte)distribution(generator), (byte)distribution(generator)));
-				textRect.left = i* width + 3;
-				textRect.right = i*width + width;
-				textRect.bottom = j*height + height;
-				textRect.top = j*height;
-				DrawText(hdc, result, 70, &textRect, DT_WORDBREAK);
+				std::string copy = str.substr(k * (textLength / (n * m)), k+1 * (textLength / (n * m)));
+				 stemp = s2ws(copy);
+				 k++;
+				 result = stemp.c_str();
+				 textRect.left = i * width + 3;
+				 textRect.right = i * width + width;
+				 textRect.bottom = j * height + height;
+				 textRect.top = j * height;
+				draw(hdc, textRect, result, width, height, i, j, textLength / (n * m));
 			}
 		}
 
